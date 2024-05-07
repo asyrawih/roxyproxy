@@ -3,9 +3,11 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"io"
 	"log"
 	"net"
+	_ "net/http/pprof"
 	"sync"
 	"tcp_proxy/parser"
 )
@@ -73,19 +75,22 @@ func handleConnection(clientConn net.Conn, targetAddr string) {
 
 }
 
-func main() {
-	// Define the listen address and target address
-	listenAddr := "localhost:8080"
-	targetAddr := "localhost:5432"
+var (
+	target       = flag.String("target", "localhost:5432", "target address")
+	listenerAddr = flag.String("listener", "localhost:8080", "listener address")
+)
 
+func main() {
+
+	flag.Parse()
 	// Start listening for incoming connections
-	listener, err := net.Listen("tcp", listenAddr)
+	listener, err := net.Listen("tcp", *listenerAddr)
 	if err != nil {
 		log.Fatalf("Error starting TCP server: %v", err)
 	}
 	defer listener.Close()
 
-	log.Printf("TCP proxy listening on %s, proxying to %s", listenAddr, targetAddr)
+	log.Printf("TCP proxy listening on %s, proxying to %s", *listenerAddr, *target)
 
 	// Accept and handle incoming connections
 	for {
@@ -96,6 +101,6 @@ func main() {
 		}
 
 		// Handle the connection in a separate goroutine
-		go handleConnection(clientConn, targetAddr)
+		go handleConnection(clientConn, *target)
 	}
 }

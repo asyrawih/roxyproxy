@@ -48,5 +48,7 @@ func rebuildSQLQuery(sqlQuery SQLQuery) string {
 	query = strings.ReplaceAll(query, "$", "")
 	query = strings.ReplaceAll(query, "%", "")
 	query = strings.ReplaceAll(query, "+", "")
+	query = strings.ReplaceAll(query, "7", "")
+	query = strings.ReplaceAll(query, "!", "")
 	return query + ";"
 }
